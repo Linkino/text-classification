@@ -5,7 +5,7 @@ from data_db import TextData
 import pandas as pd
 import numpy as np
 from gensim.models.keyedvectors import KeyedVectors
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import jieba
 import jieba.analyse
 from gensim.models import word2vec
@@ -40,8 +40,8 @@ from keras import regularizers
 from keras import constraints
 from sklearn.preprocessing import MinMaxScaler
 from keras.callbacks import EarlyStopping
-#数据读取与去除theme列中空值所在行
-
+import pickle
+from keras.utils import plot_model
 
 def load_data():
     sql = "select title,source_events,label,id from data_distinct where label is not null"
@@ -96,13 +96,30 @@ def creat_model(wordindex,wordindex1,matrix0,maxlen0,X_train, X_test, y_train, y
     model.compile(loss='categorical_crossentropy',
                   optimizer=optimizer,
                   metrics=['accuracy'])
+    # plot_model(model, to_file='model_text_cnn.png', show_shapes=True)
     # model.compile(loss='binary_crossentropy',
     # 		optimizer=optimizer,
     # 		metrics=[f1_score])
     model.summary()
     earlystopping = EarlyStopping(monitor='val_acc', min_delta=1e-2, patience=3, verbose=2, mode='auto')
-    model.fit(X_train, y_train, verbose=1, batch_size=batch_size, epochs=n_epoch, validation_data=(X_test, y_test),
+    history=model.fit(X_train, y_train, verbose=1, batch_size=batch_size, epochs=n_epoch, validation_data=(X_test, y_test),
               callbacks=[earlystopping])
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('Model accuracy')
+    plt.ylabel('Accuracy')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.show()
+
+    # 绘制训练 & 验证的损失值
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Test'], loc='upper left')
+    plt.show()
     filepath = "./model/sen_model11_bilstm_cnn.h5"
     model.save(filepath=filepath, include_optimizer=True)
     score, acc = model.evaluate(X_test, y_test, verbose=1, batch_size=batch_size)
@@ -153,7 +170,7 @@ if __name__ == "__main__":
             for b2 in list(title_list[0:])[a2]:
                 if b2 not in stpwrdlst:
                     seq_char.append(b2)
-            seq_context_char.append(str(seq_char))
+            seq_context_char.append(",".join(seq_char))
             seq_char=[]
         else:
             pass
@@ -167,7 +184,7 @@ if __name__ == "__main__":
                     seq_learn.append(b1)
                 else:
                     pass
-            seq_context.append(str(seq_learn))
+            seq_context.append(",".join(seq_learn))
             seq_learn=[]
         else:
             pass
@@ -178,6 +195,9 @@ if __name__ == "__main__":
     print(wordindex)
     wordindex['PAD'] = 0
     wordindex['UNK'] = 1
+    output = open('./dic/data_bilstm_1.pkl', 'wb')
+    pickle.dump(wordindex, output)
+    output.close()
     # model=gensim.models.Word2Vec.load('./model/word2vec_wx')
     model = gensim.models.Word2Vec.load('./model/ner_daily.model')
     embedding_matrix = np.zeros((len(wordindex) + 1, 256))
@@ -195,6 +215,9 @@ if __name__ == "__main__":
     wordindex1 = tokenizer.word_index
     wordindex1['PAD'] = 0
     wordindex1['UNK'] = 1
+    output1 = open('./dic/data_bilstm_2.pkl', 'wb')
+    pickle.dump(wordindex1, output1)
+    output1.close()
     # model=gensim.models.Word2Vec.load('./model/word2vec_wx')
     model1 = gensim.models.Word2Vec.load('./model/ner_daily.model')
     embedding_matrix1 = np.zeros((len(wordindex1) + 1, 256))
@@ -214,7 +237,7 @@ if __name__ == "__main__":
     matrix0=np.vstack((embedding_matrix,embedding_matrix1))#字词向量联合表示，于行上拼接
     y_pred_test=[]
     batch_size = 32
-    n_epoch = 5
+    n_epoch = 3
     X_train, X_test, y_train, y_test = train_test_split(X, labels, test_size=0.2, random_state=24)
     model=creat_model(wordindex, wordindex1, matrix0, maxlen0,X_train, X_test, y_train, y_test)
     y_predict = model.predict(X_test)
