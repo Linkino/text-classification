@@ -20,7 +20,7 @@
 ![图3.1 loss](https://github.com/yanhan19940405/text-classification/blob/master/image/loss.png)
 
 ![图3.2 acc](https://github.com/yanhan19940405/text-classification/blob/master/image/acc.png)
-
+综上，模型已经排除了过拟合因素影响。
 3.新闻主题分类数据总量为40w，使用模型也为基于text-cnn改进模型，模型效果如下图所示，分类为7类，结果待后需进一步优化：  
 
 ![图4 classreport](https://github.com/yanhan19940405/text-classification/blob/master/image/theme.png)
