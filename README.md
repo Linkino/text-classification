@@ -13,10 +13,11 @@
 
 ![图2 classreport](https://github.com/yanhan19940405/text-classification/blob/master/image/1.png)
 
-模型结构如下图所示：  
+模型结构如下图所示，训练过程中模型loss与acc曲线如下所示：  
 
 ![图3 structure](https://github.com/yanhan19940405/text-classification/blob/master/image/structure.png)
-
+![图3.1 loss](https://github.com/yanhan19940405/text-classification/blob/master/image/loss.png)
+![图3.2 acc](https://github.com/yanhan19940405/text-classification/blob/master/image/acc.png)
 3.新闻主题分类数据总量为40w，使用模型也为基于text-cnn改进模型，模型效果如下图所示，分类为7类，结果待后需进一步优化：  
 
 ![图4 classreport](https://github.com/yanhan19940405/text-classification/blob/master/image/theme.png)
