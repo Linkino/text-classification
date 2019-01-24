@@ -15,8 +15,6 @@
 
 模型结构如下图所示，训练过程中模型loss与acc曲线如下所示：  
 
-![图3 structure](https://github.com/yanhan19940405/text-classification/blob/master/image/structure.png)
-
 ![图3.1 loss](https://github.com/yanhan19940405/text-classification/blob/master/image/loss.png)
 
 ![图3.2 acc](https://github.com/yanhan19940405/text-classification/blob/master/image/acc.png)
